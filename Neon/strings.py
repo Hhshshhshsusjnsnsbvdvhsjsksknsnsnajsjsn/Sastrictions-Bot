@@ -1,24 +1,24 @@
-HELP_TXT = """**🆘 Help Menu 🆘**
+HELP_TXT = """<b>🆘 𝐇𝐄𝐋𝐏 𝐌𝐄𝐍𝐔 🆘</b>
 
-<blockquote>**‣ __For Private Chats__**</blockquote>
-__First Send The Invite Link Of The Chat__  
-__(Unnecessary If The String Session Account Is Already A Member).  
-Then Send The Post(S) Link.__  
+<blockquote><b>‣ <i>For Private Chats</i></b></blockquote>
+<i>First Send The Invite Link Of The Chat</i>  
+<i>(Unnecessary If The String Session Account Is Already A Member).</i>  
+<i>Then Send The Post(S) Link.</i>  
 
-<blockquote>**‣ __For Bot Chats__**</blockquote>
-__Send The Link With `/b/`, The Bot's Username, And The Message ID.__  
-__(You May Need An Unofficial Client To Get The Message ID).__  
+<blockquote><b>‣ <i>For Bot Chats</i></b></blockquote>
+<i>Send The Link With /b/, The Bot's Username, And The Message ID.</i>  
+<i>(You May Need An Unofficial Client To Get The Message ID).</i>  
 
-**__Example:**  
-https://t.me/b/botusername/4321__  
+<b><i>Example:</i></b>  
+https://t.me/b/botusername/4321  
 
-<blockquote>**__‣ Multi Posts__**</blockquote>
-__Send Public/Private Post Links As Explained Above. For Multiple Post(s)__  
-__Use The Format [Start - End] to Send Multiple Messages.__  
+<blockquote><b><i>‣ Multi Posts</i></b></blockquote>
+<i>Send Public/Private Post Links As Explained Above. For Multiple Post(s)</i>  
+<i>Use The Format [Start - End] to Send Multiple Messages.</i>  
 
-**__Examples:**  
+<b><i>Examples:</i></b>  
 https://t.me/xxxx/1001-1010  
-https://t.me/c/xxxx/101-120__  
+https://t.me/c/xxxx/101-120  
 
-**⚠️ __Spaces In Between Don’t Matter.__**
+<b>⚠️ <i>Spaces In Between Don’t Matter.</i></b>
 """
