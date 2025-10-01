@@ -1,3 +1,4 @@
+#Start.py
 import os
 import asyncio
 import random
@@ -427,3 +428,7 @@ async def button_callbacks(client: Client, callback_query):
         await client.delete_messages(message.chat.id, [message.id])
         await callback_query.answer()
         
+
+# Dont remove Credits
+# Developer Telegram @MyselfNeon
+# Update channel - @NeonFiles
