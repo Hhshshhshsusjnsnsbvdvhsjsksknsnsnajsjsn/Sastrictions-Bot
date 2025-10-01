@@ -1,4 +1,3 @@
-# Start.py
 import os
 import asyncio
 import random
@@ -96,7 +95,7 @@ async def send_start(client: Client, message: Message):
         print(f"Reaction failed: {e}")
 
 # -------------------
-# Help command
+# Help command (standalone)
 # -------------------
 @Client.on_message(filters.command(["help"]))
 async def send_help(client: Client, message: Message):
@@ -340,7 +339,7 @@ def get_message_type(msg: pyrogram.types.messages_and_media.message.Message):
         pass
 
 # -------------------
-# Inline button callback for Admin Panel / Start Page / About Page
+# Inline button callback
 # -------------------
 @Client.on_callback_query()
 async def button_callbacks(client: Client, callback_query):
@@ -349,15 +348,26 @@ async def button_callbacks(client: Client, callback_query):
 
     # Help button
     if data == "help_btn":
-        await send_help(client, message)
+        help_buttons = InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton("Cʟᴏsᴇ ❌", callback_data="close_btn"),
+                InlineKeyboardButton("⬅️ Bᴀᴄᴋ", callback_data="start_btn")
+            ]
+        ])
+
+        await client.edit_message_text(
+            chat_id=message.chat.id,
+            message_id=message.id,
+            text=HELP_TXT,
+            reply_markup=help_buttons,
+            parse_mode=enums.ParseMode.HTML,
+            disable_web_page_preview=True
+        )
         await callback_query.answer()
 
     # About button
     elif data == "about_btn":
         me = await client.get_me()
-        bot_name = me.first_name
-        bot_username = me.username
-
         about_text = (
             "<b><blockquote>‣ 📝 𝐌𝐘 𝐃𝐄𝐓𝐀𝐈𝐋𝐒</blockquote>\n\n"
             "<i>• Mʏ Nᴀᴍᴇ : <a href='https://t.me/SaveRestriction_oBot'>Save Restrictions</a>\n"  
@@ -387,7 +397,7 @@ async def button_callbacks(client: Client, callback_query):
             text=about_text,
             reply_markup=about_buttons,
             parse_mode=enums.ParseMode.HTML,
-            disable_web_page_preview=True  # ✅ Web preview disabled
+            disable_web_page_preview=True
         )
         await callback_query.answer()
 
