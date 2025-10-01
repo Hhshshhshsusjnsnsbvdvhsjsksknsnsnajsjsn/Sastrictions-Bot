@@ -32,7 +32,7 @@ async def main(bot: Client, message: Message):
         await message.reply("**__Your Are Already Logged In 🤓\n\nFirst /logout Your Old Session. Then Do /login Again !!__ 🔑**")
         return 
     user_id = int(message.from_user.id)
-    phone_number_msg = await bot.ask(chat_id=user_id, text="<b>__Please Send Your Phone Number Which Includes Country Code__</b>\n\n<b>__Example:__</b> <code>+91987654321</code>")
+    phone_number_msg = await bot.ask(chat_id=user_id, text="<b>__Please Send Your Phone Number Which Includes Country Code__ 📊</b>\n\n<b>__Example:__</b> <code>+91987654321</code>")
     if phone_number_msg.text=='/cancel':
         return await phone_number_msg.reply('<b>❌ __Process Cancelled !!__</b>')
     phone_number = phone_number_msg.text
