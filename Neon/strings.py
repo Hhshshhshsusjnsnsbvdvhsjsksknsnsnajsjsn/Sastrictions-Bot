@@ -1,3 +1,4 @@
+#Strings.py
 HELP_TXT = """<b>=====  🆘 𝐇𝐄𝐋𝐏 𝐌𝐄𝐍𝐔 🆘  =====</b>
 
 <blockquote><b>‣ <i>For Private Chats</i></b></blockquote>
@@ -22,3 +23,7 @@ HELP_TXT = """<b>=====  🆘 𝐇𝐄𝐋𝐏 𝐌𝐄𝐍𝐔 🆘  =====</b>
 
 <b>⚠️ <i>Spaces In Between Don’t Matter.</i></b>
 """
+
+# Dont remove Credits
+# Developer Telegram @MyselfNeon
+# Update channel - @NeonFiles
