@@ -27,19 +27,19 @@ async def logout(client, message):
     # Confirmation buttons
     keyboard = InlineKeyboardMarkup(
         [[
-            InlineKeyboardButton("✅ Yes", callback_data="logout_yes"),
-            InlineKeyboardButton("❌ Hell No", callback_data="logout_no")
+            InlineKeyboardButton("✅ Yᴇs", callback_data="logout_yes"),
+            InlineKeyboardButton("❌ Hᴇʟʟ Nᴏ", callback_data="logout_no")
         ]]
     )
-    await message.reply("**⚠️ You really want to logout?**", reply_markup=keyboard)
+    await message.reply("**⚠️ __You Really want to Logout ?__**", reply_markup=keyboard)
 
 @Client.on_callback_query()
 async def logout_confirm(client, callback_query: CallbackQuery):
     if callback_query.data == "logout_yes":
         await db.set_session(callback_query.from_user.id, session=None)
-        await callback_query.message.edit("**✅ Logout Successfully 🚪**")
+        await callback_query.message.edit("**__✅ Logout Successfully 🚪__**")
     elif callback_query.data == "logout_no":
-        await callback_query.message.edit("**❌ Logout Cancelled.**")
+        await callback_query.message.edit("**__❌ Logout Cancelled.__**")
     await callback_query.answer()
 
 
