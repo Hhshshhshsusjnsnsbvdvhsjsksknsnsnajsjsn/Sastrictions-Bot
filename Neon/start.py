@@ -102,7 +102,8 @@ async def send_start(client: Client, message: Message):
 async def send_help(client: Client, message: Message):
     await client.send_message(
         chat_id=message.chat.id,
-        text=f"{HELP_TXT}"
+        text=f"{HELP_TXT}",
+        quote=True
     )
 
 # -------------------
@@ -113,7 +114,8 @@ async def send_cancel(client: Client, message: Message):
     batch_temp.IS_BATCH[message.from_user.id] = True
     await client.send_message(
         chat_id=message.chat.id,
-        text="**__Batch Successfully Cancelled.__**"
+        text="**❌ __Batch Successfully Cancelled.__**",
+        quote=True
     )
 
 # -------------------
