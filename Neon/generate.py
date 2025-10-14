@@ -1,8 +1,9 @@
-# Generate.py
+#Generate.py
 import traceback
-from pyrogram.types import Message, InlineKeyboardMarkup, InlineKeyboardButton, CallbackQuery
+from pyrogram.types import Message
 from pyrogram import Client, filters
 from asyncio.exceptions import TimeoutError
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
 from pyrogram.errors import (
     ApiIdInvalid,
     PhoneNumberInvalid,
@@ -16,36 +17,14 @@ from database.db import db
 
 SESSION_STRING_SIZE = 351
 
-# -----------------------------
-# Logout command with confirmation
-# -----------------------------
 @Client.on_message(filters.private & ~filters.forwarded & filters.command(["logout"]))
 async def logout(client, message):
-    user_data = await db.get_session(message.from_user.id)
+    user_data = await db.get_session(message.from_user.id)  
     if user_data is None:
         return 
-    # Confirmation buttons
-    keyboard = InlineKeyboardMarkup(
-        [[
-            InlineKeyboardButton("✅ Yᴇs", callback_data="logout_yes"),
-            InlineKeyboardButton("❌ Hᴇʟʟ Nᴏ", callback_data="logout_no")
-        ]]
-    )
-    await message.reply("**⚠️ __You Really want to Logout ?__**", reply_markup=keyboard)
+    await db.set_session(message.from_user.id, session=None)  
+    await message.reply("**__Logout Successfully__ 🚪**")
 
-@Client.on_callback_query()
-async def logout_confirm(client, callback_query: CallbackQuery):
-    if callback_query.data == "logout_yes":
-        await db.set_session(callback_query.from_user.id, session=None)
-        await callback_query.message.edit("**__✅ Logout Successfully 🚪__**")
-    elif callback_query.data == "logout_no":
-        await callback_query.message.edit("**__❌ Logout Cancelled.__**")
-    await callback_query.answer()
-
-
-# -----------------------------
-# Login command
-# -----------------------------
 @Client.on_message(filters.private & ~filters.forwarded & filters.command(["login"]))
 async def main(bot: Client, message: Message):
     user_data = await db.get_session(message.from_user.id)
@@ -100,6 +79,7 @@ async def main(bot: Client, message: Message):
     except Exception as e:
         return await message.reply_text(f"<b>❌ __ERROR IN LOGIN: `{e}`__</b>")
     await bot.send_message(message.from_user.id, "<b>__Account Login Successfully ✅\n\nIf You Get Any Error Related To AUTH KEY Then /logout first and /login again.__</b>")
+
 
 # Dont remove Credits
 # Developer Telegram @MyselfNeon
