@@ -19,3 +19,6 @@ LOG_CHANNEL = -1001889915480  # replace with your log channel id
 
 # If You Want Error Message In Your Personal Message Then Turn It True Else If You Don't Want Then False
 ERROR_MESSAGE = bool(os.environ.get('ERROR_MESSAGE', True))
+
+# Keep-Alive URL
+KEEP_ALIVE_URL = environ.get("KEEP_ALIVE_URL", "https://saverestrictions-bot.onrender.com/")  # <-- Add this line
