@@ -1,9 +1,12 @@
-#Bot.py
+# Bot.py
+import asyncio
+import logging
+import datetime
+from datetime import timezone, timedelta
+import aiohttp
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from config import API_ID, API_HASH, BOT_TOKEN, LOG_CHANNEL
-import datetime
-from datetime import timezone, timedelta  # ✅ Added for IST
+from config import API_ID, API_HASH, BOT_TOKEN, LOG_CHANNEL, KEEP_ALIVE_URL
 
 # ✅ Indian Standard Time
 IST = timezone(timedelta(hours=5, minutes=30))
@@ -11,8 +14,20 @@ IST = timezone(timedelta(hours=5, minutes=30))
 # Store logged users (in-memory)
 LOGGED_USERS = set()
 
-class Bot(Client):
 
+async def keep_alive():
+    """Send a request every 100 seconds to keep the bot alive (if required)."""
+    async with aiohttp.ClientSession() as session:
+        while True:
+            try:
+                await session.get(KEEP_ALIVE_URL)
+                logging.info("Sent keep-alive request.")
+            except Exception as e:
+                logging.error(f"Keep-alive request failed: {e}")
+            await asyncio.sleep(100)
+
+
+class Bot(Client):
     def __init__(self):
         super().__init__(
             "Neon Login",
@@ -23,13 +38,17 @@ class Bot(Client):
             workers=50,
             sleep_threshold=10
         )
+        self.keep_alive_task = None  # ✅ Track keep-alive task
 
     async def start(self):
         await super().start()
         me = await self.get_me()
 
+        # Start keep-alive task in background
+        self.keep_alive_task = asyncio.create_task(keep_alive())
+
         # Bot Deploy/Restart log
-        now = datetime.datetime.now(IST)  # ✅ Using IST
+        now = datetime.datetime.now(IST)
         text = (
             f"**🤖 __Bot Deployed / Restarted__ ♻️**\n"
             f"**- __@{me.username}__**\n\n"
@@ -46,14 +65,26 @@ class Bot(Client):
 
     async def stop(self, *args):
         me = await self.get_me()
+
+        # Stop keep-alive loop if running
+        if self.keep_alive_task:
+            self.keep_alive_task.cancel()
+            try:
+                await self.keep_alive_task
+            except asyncio.CancelledError:
+                pass
+
         try:
             await self.send_message(LOG_CHANNEL, f"❌ Bot @{me.username} Stopped")
         except Exception as e:
             print(f"Stop log failed: {e}")
+
         await super().stop()
         print("Bot Stopped Bye")
 
+
 BotInstance = Bot()
+
 
 # Handler for new users (only logs once per user)
 @BotInstance.on_message(filters.private & filters.incoming, group=-1)
@@ -66,7 +97,7 @@ async def new_user_log(bot: Client, message: Message):
     if user.id not in LOGGED_USERS:
         LOGGED_USERS.add(user.id)
 
-        now = datetime.datetime.now(IST)  # ✅ Using IST
+        now = datetime.datetime.now(IST)
         text = (
             f"**#NewUser 👤**\n"
             f"- __@{bot.me.username}__\n\n"
@@ -79,5 +110,6 @@ async def new_user_log(bot: Client, message: Message):
             await bot.send_message(LOG_CHANNEL, text)
         except Exception as e:
             print(f"New user log failed: {e}")
+
 
 BotInstance.run()
