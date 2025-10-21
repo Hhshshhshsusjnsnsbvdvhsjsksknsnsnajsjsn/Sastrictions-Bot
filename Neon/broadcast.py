@@ -145,8 +145,7 @@ async def users_count(bot: Client, message: Message):
         caption = f"📄 Recorded {len(users_list)} Users"
         await message.reply_document(
             document=tmp_path,
-            caption=caption,
-            quote=True
+            caption=caption
         )
 
         # 5) Clean up the file after sending
