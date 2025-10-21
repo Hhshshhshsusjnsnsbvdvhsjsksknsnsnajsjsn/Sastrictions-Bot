@@ -9,7 +9,6 @@ from pyrogram.types import Message
 import json
 import tempfile
 import os
-from pyrogram.types import InputFile
 
 # ─────────────────────────────
 # Broadcast helper function
@@ -150,7 +149,7 @@ async def users_count(bot: Client, message: Message):
         # 4) Send the JSON file to the admin who requested it
         caption = f"📄 Recorded {len(users_list)} Users"
         await message.reply_document(
-            document=InputFile(tmp_path),
+            document=tmp_path,
             caption=caption,
             quote=True
         )
