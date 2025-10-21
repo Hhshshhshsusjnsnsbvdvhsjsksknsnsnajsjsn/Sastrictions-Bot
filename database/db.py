@@ -6,13 +6,13 @@ class Database:
     def __init__(self, uri, database_name):
         self._client = motor.motor_asyncio.AsyncIOMotorClient(uri)
         self.db = self._client[database_name]
-        self.col = self.db.SaveRestricted_Users  # <-- New collection for this bot only
+        self.col = self.db.users
 
     def new_user(self, id, name):
         return dict(
-            id=id,
-            name=name,
-            session=None,
+            id = id,
+            name = name,
+            session = None,
         )
     
     async def add_user(self, id, name):
@@ -20,11 +20,12 @@ class Database:
         await self.col.insert_one(user)
     
     async def is_user_exist(self, id):
-        user = await self.col.find_one({'id': int(id)})
+        user = await self.col.find_one({'id':int(id)})
         return bool(user)
     
     async def total_users_count(self):
-        return await self.col.count_documents({})
+        count = await self.col.count_documents({})
+        return count
 
     async def get_all_users(self):
         return self.col.find({})
@@ -39,6 +40,4 @@ class Database:
         user = await self.col.find_one({'id': int(id)})
         return user.get('session')
 
-
-# Create a DB instance specifically for this bot
 db = Database(DB_URI, DB_NAME)
