@@ -8,7 +8,7 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 from config import API_ID, API_HASH, BOT_TOKEN, LOG_CHANNEL, KEEP_ALIVE_URL
 
-✅ Indian Standard Time
+# ✅ Indian Standard Time
 
 IST = timezone(timedelta(hours=5, minutes=30))
 
