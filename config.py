@@ -12,7 +12,7 @@ ADMINS = int(os.environ.get("ADMINS", "841851780"))
 
 # Your Mongodb Database Url
 DB_URI = os.environ.get("DB_URI", "")
-DB_NAME = os.environ.get("DB_NAME", "SaveRestrictedNeon")
+DB_NAME = os.environ.get("DB_NAME", "RestrictedNeon")
 
 # Log Channel to Track New Users 
 LOG_CHANNEL = -1001889915480  # replace with your log channel id
