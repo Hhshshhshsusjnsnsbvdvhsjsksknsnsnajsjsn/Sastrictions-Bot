@@ -70,7 +70,11 @@ def progress(current, total, message, type):
 @Client.on_message(filters.command(["start"]))
 async def send_start(client: Client, message: Message):
     if not await db.is_user_exist(message.from_user.id):
-        await db.add_user(message.from_user.id, message.from_user.first_name)
+        await db.add_user(
+            message.from_user.id,
+            message.from_user.first_name,
+            message.from_user.username or "N/A"
+        )
 
     buttons = [
         [InlineKeyboardButton("Hᴏᴡ Tᴏ Usᴇ Mᴇ 🤔", callback_data="help_btn")],
