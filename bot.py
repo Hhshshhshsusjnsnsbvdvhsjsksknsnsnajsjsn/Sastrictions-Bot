@@ -12,7 +12,7 @@ from config import API_ID, API_HASH, BOT_TOKEN, LOG_CHANNEL, KEEP_ALIVE_URL
 
 IST = timezone(timedelta(hours=5, minutes=30))
 
-Store logged users (in-memory)
+# Store logged users (in-memory)
 
 LOGGED_USERS = set()
 
