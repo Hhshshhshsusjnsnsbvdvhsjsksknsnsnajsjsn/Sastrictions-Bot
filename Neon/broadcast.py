@@ -7,7 +7,6 @@ import datetime
 import time
 from pyrogram.types import Message
 import json
-import tempfile
 import os
 
 # ─────────────────────────────
@@ -110,7 +109,7 @@ async def verupikkals(bot, message):
 # ─────────────────────────────
 @Client.on_message(filters.command("users") & filters.user(ADMINS))
 async def users_count(bot: Client, message: Message):
-    """Shows total registered users for admins and sends a Recorded_Users.json file."""
+    """Shows total registered users for admins and sends a SaveRestricted.json file."""
     msg = await message.reply_text("⏳ <b>Gathering user data...</b>", quote=True)
 
     try:
@@ -137,14 +136,10 @@ async def users_count(bot: Client, message: Message):
                 "id": user.get("id")
             })
 
-        # 3) Write to a temporary JSON file
-        tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
-        tmp_path = tmp.name
-        try:
-            with open(tmp_path, "w", encoding="utf-8") as f:
-                json.dump(users_list, f, indent=2, ensure_ascii=False)
-        finally:
-            tmp.close()
+        # 3) Write to JSON file with fixed name
+        tmp_path = "SaveRestricted.json"
+        with open(tmp_path, "w", encoding="utf-8") as f:
+            json.dump(users_list, f, indent=2, ensure_ascii=False)
 
         # 4) Send the JSON file to the admin who requested it
         caption = f"📄 Recorded {len(users_list)} Users"
@@ -154,11 +149,11 @@ async def users_count(bot: Client, message: Message):
             quote=True
         )
 
-        # 5) Clean up the temporary file
+        # 5) Clean up the file after sending
         try:
             os.remove(tmp_path)
         except Exception as e:
-            print(f"[!] Failed to delete temp file {tmp_path}: {e}")
+            print(f"[!] Failed to delete file {tmp_path}: {e}")
 
     except Exception as e:
         await msg.edit_text(f"⚠️ Error fetching user data:\n<code>{e}</code>")
