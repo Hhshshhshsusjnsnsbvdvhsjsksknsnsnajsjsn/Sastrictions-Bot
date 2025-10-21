@@ -1,4 +1,3 @@
-#Start.py
 import os
 import asyncio
 import random
@@ -64,8 +63,14 @@ def progress(current, total, message, type):
 # -------------------
 @Client.on_message(filters.command(["start"]))
 async def send_start(client: Client, message: Message):
-    if not await db.is_user_exist(message.from_user.id):
-        await db.add_user(message.from_user.id, message.from_user.first_name)
+    # ✅ Auto-register user on /start
+    try:
+        user_id = message.from_user.id
+        user_name = message.from_user.first_name
+        if not await db.is_user_exist(user_id):
+            await db.add_user(user_id, user_name)
+    except Exception as e:
+        print(f"User registration failed: {e}")
 
     buttons = [
         [InlineKeyboardButton("Hᴏᴡ Tᴏ Usᴇ Mᴇ 🤔", callback_data="help_btn")],
