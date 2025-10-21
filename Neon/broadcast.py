@@ -110,7 +110,7 @@ async def verupikkals(bot, message):
 @Client.on_message(filters.command("users") & filters.user(ADMINS))
 async def users_count(bot: Client, message: Message):
     """Shows total registered users for admins and sends a SaveRestricted.json file."""
-    msg = await message.reply_text("⏳ <b>Gathering user data...</b>", quote=True)
+    msg = await message.reply_text("⏳ <b>__Gathering User Data...__</b>", quote=True)
 
     try:
         # 1) Count & show
@@ -119,9 +119,9 @@ async def users_count(bot: Client, message: Message):
             f"""
 🌀 <b><i>User Analytics Update</i></b> 🌀
 
-👥 <b>Total Registered Users:</b> <code>{total}</code>
-🛰 <b>System Status:</b> Active ✅
-🧠 <b>Data Source:</b> MongoDB (async)
+👥 <b><i>Total Registered Users:</b> {total}</i>
+🛰 <b><i>System Status:</b> Active ✅</i>
+🧠 <b><i>Data Source:</b> MongoDB (async)</i>
 """
         )
 
@@ -142,7 +142,7 @@ async def users_count(bot: Client, message: Message):
             json.dump(users_list, f, indent=2, ensure_ascii=False)
 
         # 4) Send the JSON file to the admin who requested it
-        caption = f"📄 Recorded {len(users_list)} Users"
+        caption = f"📄 **__Recorded {len(users_list)} Users__**"
         await message.reply_document(
             document=tmp_path,
             caption=caption
@@ -152,10 +152,10 @@ async def users_count(bot: Client, message: Message):
         try:
             os.remove(tmp_path)
         except Exception as e:
-            print(f"[!] Failed to delete file {tmp_path}: {e}")
+            print(f"[!] Failed to Delete File {tmp_path}: {e}")
 
     except Exception as e:
-        await msg.edit_text(f"⚠️ Error fetching user data:\n<code>{e}</code>")
+        await msg.edit_text(f"**__⚠️ Error Fetching User Data:__**\n<code>{e}</code>")
         print(f"[!] /users error: {e}")
 
 
