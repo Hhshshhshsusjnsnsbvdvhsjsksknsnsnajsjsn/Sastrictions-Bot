@@ -1,9 +1,10 @@
-# Bot.py
+#Bot.py
 import asyncio
 import logging
 import datetime
 from datetime import timezone, timedelta
 import aiohttp
+import os
 from pyrogram import Client, filters
 from pyrogram.types import Message
 from config import API_ID, API_HASH, BOT_TOKEN, LOG_CHANNEL, KEEP_ALIVE_URL
@@ -27,14 +28,32 @@ async def keep_alive():
             await asyncio.sleep(300)
 
 
+def find_all_plugins(*folders):
+    """
+    Recursively find all Python plugin files in the given folders.
+    Returns a dict suitable for Pyrogram's plugins parameter.
+    """
+    plugins_dict = {}
+    for root_dir in folders:
+        for dirpath, _, filenames in os.walk(root_dir):
+            for file in filenames:
+                if file.endswith(".py") and not file.startswith("__"):
+                    rel_path = os.path.relpath(os.path.join(dirpath, file), root_dir)
+                    module_name = rel_path.replace(os.sep, ".")[:-3]  # remove .py
+                    plugins_dict[module_name] = os.path.join(dirpath, file)
+    return plugins_dict
+
+
 class Bot(Client):
-    def __init__(self):
+    def __init__(self, plugin_folders=None):
+        # Load all plugins recursively from given folders
+        plugins_to_load = find_all_plugins(*plugin_folders) if plugin_folders else {}
         super().__init__(
             "Neon Login",
             api_id=API_ID,
             api_hash=API_HASH,
             bot_token=BOT_TOKEN,
-            plugins=dict(root="Neon"),
+            plugins=plugins_to_load,
             workers=50,
             sleep_threshold=10
         )
@@ -54,7 +73,7 @@ class Bot(Client):
             f"**- __@{me.username}__**\n\n"
             f"**- __Date:__** __{now.strftime('%d-%b-%Y')}__\n"
             f"**- __Time:__** __{now.strftime('%I:%M %p')}__\n"
-            f"**- __@neonfiles __**"
+            f"**- __@neonfiles__**"
         )
         try:
             await self.send_message(LOG_CHANNEL, text)
@@ -83,8 +102,8 @@ class Bot(Client):
         print("Bot Stopped Bye")
 
 
-BotInstance = Bot()
-
+# Pass the root folders of your repo here
+BotInstance = Bot(plugin_folders=["Neon", "MyselfNeon"])
 
 # Handler for new users (only logs once per user)
 @BotInstance.on_message(filters.private & filters.incoming, group=-1)
