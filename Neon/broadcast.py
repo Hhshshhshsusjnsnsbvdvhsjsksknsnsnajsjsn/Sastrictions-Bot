@@ -1,4 +1,3 @@
-# Broadcast.py
 from pyrogram.errors import InputUserDeactivated, UserNotParticipant, FloodWait, UserIsBlocked, PeerIdInvalid
 from database.db import db
 from pyrogram import Client, filters
@@ -6,7 +5,11 @@ from config import ADMINS
 import asyncio
 import datetime
 import time
+from pyrogram.types import Message
 
+# ─────────────────────────────
+# Broadcast helper function
+# ─────────────────────────────
 async def broadcast_messages(user_id, message):
     try:
         await message.copy(chat_id=user_id)
@@ -27,6 +30,9 @@ async def broadcast_messages(user_id, message):
         return False, "Error"
 
 
+# ─────────────────────────────
+# /broadcast command
+# ─────────────────────────────
 @Client.on_message(filters.command("broadcast") & filters.user(ADMINS))
 async def verupikkals(bot, message):
     b_msg = message.reply_to_message
@@ -96,6 +102,30 @@ async def verupikkals(bot, message):
         f"**🚫 __Blocked :** {blocked}__\n"
         f"**🚮 __Deleted :** {deleted}__"
     )
+
+
+# ─────────────────────────────
+# /users Command (Standalone)
+# ─────────────────────────────
+@Client.on_message(filters.command("users") & filters.user(ADMINS))
+async def users_count(bot: Client, message: Message):
+    """Shows total registered users for admins."""
+    msg = await message.reply_text("⏳ <b>Gathering user data...</b>", quote=True)
+    
+    try:
+        total = await db.total_users_count()
+        await msg.edit_text(
+            f"""
+🌀 <b><i>User Analytics Update</i></b> 🌀
+
+👥 <b>Total Registered Users:</b> <code>{total}</code>
+🛰 <b>System Status:</b> Active ✅
+🧠 <b>Data Source:</b> MongoDB (async)
+"""
+        )
+    except Exception as e:
+        await msg.edit_text(f"⚠️ Error fetching user data:\n<code>{e}</code>")
+        print(f"[!] /users error: {e}")
 
 
 # Dont remove Credits
