@@ -84,7 +84,7 @@ async def stop(self, *args):
 
 BotInstance = Bot()
 
-Handler for new users (only logs once per user)
+# Handler for new users (only logs once per user)
 
 @BotInstance.on_message(filters.private & filters.incoming, group=-1)
 async def new_user_log(bot: Client, message: Message):
