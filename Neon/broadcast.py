@@ -6,6 +6,10 @@ import asyncio
 import datetime
 import time
 from pyrogram.types import Message
+import json
+import tempfile
+import os
+from pyrogram.types import InputFile
 
 # ─────────────────────────────
 # Broadcast helper function
@@ -28,7 +32,6 @@ async def broadcast_messages(user_id, message):
         return False, "Error"
     except Exception:
         return False, "Error"
-
 
 # ─────────────────────────────
 # /broadcast command
@@ -103,16 +106,16 @@ async def verupikkals(bot, message):
         f"**🚮 __Deleted :** {deleted}__"
     )
 
-
 # ─────────────────────────────
-# /users Command (Standalone)
+# /users Command (Standalone + JSON export)
 # ─────────────────────────────
 @Client.on_message(filters.command("users") & filters.user(ADMINS))
 async def users_count(bot: Client, message: Message):
-    """Shows total registered users for admins."""
+    """Shows total registered users for admins and sends a Recorded_Users.json file."""
     msg = await message.reply_text("⏳ <b>Gathering user data...</b>", quote=True)
-    
+
     try:
+        # 1) Count & show
         total = await db.total_users_count()
         await msg.edit_text(
             f"""
@@ -123,6 +126,41 @@ async def users_count(bot: Client, message: Message):
 🧠 <b>Data Source:</b> MongoDB (async)
 """
         )
+
+        # 2) Fetch all users and build list
+        users_cursor = await db.get_all_users()
+        users_list = []
+        async for user in users_cursor:
+            # Make fields consistent with your requested format
+            users_list.append({
+                "name": user.get("name", "None"),
+                "username": user.get("username", "None"),
+                "id": user.get("id")
+            })
+
+        # 3) Write to a temporary JSON file
+        tmp = tempfile.NamedTemporaryFile(delete=False, suffix=".json")
+        tmp_path = tmp.name
+        try:
+            with open(tmp_path, "w", encoding="utf-8") as f:
+                json.dump(users_list, f, indent=2, ensure_ascii=False)
+        finally:
+            tmp.close()
+
+        # 4) Send the JSON file to the admin who requested it
+        caption = f"📄 Recorded {len(users_list)} Users"
+        await message.reply_document(
+            document=InputFile(tmp_path),
+            caption=caption,
+            quote=True
+        )
+
+        # 5) Clean up the temporary file
+        try:
+            os.remove(tmp_path)
+        except Exception as e:
+            print(f"[!] Failed to delete temp file {tmp_path}: {e}")
+
     except Exception as e:
         await msg.edit_text(f"⚠️ Error fetching user data:\n<code>{e}</code>")
         print(f"[!] /users error: {e}")
