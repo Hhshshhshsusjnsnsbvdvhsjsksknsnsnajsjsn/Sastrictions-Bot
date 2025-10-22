@@ -1,4 +1,15 @@
-#Strings.py
+# ---------------------------------------------------
+# File Name: Strings.py
+# Author: NeonAnurag
+# GitHub: https://github.com/MyselfNeon/
+# Telegram: https://t.me/MyelfNeon
+# YouTube: https://youtube.com/@MyselfNeon
+# Created: 2025-10-21
+# Last Modified: 2025-10-22
+# Version: Latest
+# License: MIT License
+# ---------------------------------------------------
+
 HELP_TXT = """<b>=====  🆘 𝐇𝐄𝐋𝐏 𝐌𝐄𝐍𝐔 🆘  =====</b>
 
 <blockquote><b>‣ <i>For Private Chats</i></b></blockquote>

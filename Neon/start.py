@@ -1,4 +1,15 @@
-# Start.py
+# ---------------------------------------------------
+# File Name: Start.py
+# Author: NeonAnurag
+# GitHub: https://github.com/MyselfNeon/
+# Telegram: https://t.me/MyelfNeon
+# YouTube: https://youtube.com/@MyselfNeon
+# Created: 2025-10-21
+# Last Modified: 2025-10-22
+# Version: Latest
+# License: MIT License
+# ---------------------------------------------------
+
 import os
 import asyncio
 import random
@@ -70,11 +81,7 @@ def progress(current, total, message, type):
 @Client.on_message(filters.command(["start"]))
 async def send_start(client: Client, message: Message):
     if not await db.is_user_exist(message.from_user.id):
-        await db.add_user(
-            message.from_user.id,
-            message.from_user.first_name,
-            message.from_user.username or "N/A"
-        )
+        await db.add_user(message.from_user.id, message.from_user.first_name)
 
     buttons = [
         [InlineKeyboardButton("Hᴏᴡ Tᴏ Usᴇ Mᴇ 🤔", callback_data="help_btn")],
@@ -442,6 +449,7 @@ async def button_callbacks(client: Client, callback_query):
     elif data == "close_btn":
         await client.delete_messages(message.chat.id, [message.id])
         await callback_query.answer()
+
 
 # Don't remove Credits
 # Developer Telegram @MyselfNeon

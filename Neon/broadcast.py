@@ -1,3 +1,15 @@
+# ---------------------------------------------------
+# File Name: Broadcast.py
+# Author: NeonAnurag
+# GitHub: https://github.com/MyselfNeon/
+# Telegram: https://t.me/MyelfNeon
+# YouTube: https://youtube.com/@MyselfNeon
+# Created: 2025-10-21
+# Last Modified: 2025-10-22
+# Version: Latest
+# License: MIT License
+# ---------------------------------------------------
+
 from pyrogram.errors import InputUserDeactivated, UserNotParticipant, FloodWait, UserIsBlocked, PeerIdInvalid
 from database.db import db
 from pyrogram import Client, filters
@@ -5,13 +17,7 @@ from config import ADMINS
 import asyncio
 import datetime
 import time
-from pyrogram.types import Message
-import json
-import os
 
-# ─────────────────────────────
-# Broadcast helper function
-# ─────────────────────────────
 async def broadcast_messages(user_id, message):
     try:
         await message.copy(chat_id=user_id)
@@ -31,9 +37,7 @@ async def broadcast_messages(user_id, message):
     except Exception:
         return False, "Error"
 
-# ─────────────────────────────
-# /broadcast command
-# ─────────────────────────────
+
 @Client.on_message(filters.command("broadcast") & filters.user(ADMINS))
 async def verupikkals(bot, message):
     b_msg = message.reply_to_message
@@ -103,60 +107,6 @@ async def verupikkals(bot, message):
         f"**🚫 __Blocked :** {blocked}__\n"
         f"**🚮 __Deleted :** {deleted}__"
     )
-
-# ─────────────────────────────
-# /users Command (Standalone + JSON export)
-# ─────────────────────────────
-@Client.on_message(filters.command("users") & filters.user(ADMINS))
-async def users_count(bot: Client, message: Message):
-    """Shows total registered users for admins and sends a SaveRestricted.json file."""
-    msg = await message.reply_text("⏳ <b>__Gathering User Data...__</b>", quote=True)
-
-    try:
-        # 1) Count & show
-        total = await db.total_users_count()
-        await msg.edit_text(
-            f"""
-🌀 <b><i>User Analytics Update</i></b> 🌀
-
-👥 <b><i>Total Registered Users:</b> {total}</i>
-🛰 <b><i>System Status:</b> Active ✅</i>
-🧠 <b><i>Data Source:</b> MongoDB (async)</i>
-"""
-        )
-
-        # 2) Fetch all users and build list
-        users_cursor = await db.get_all_users()
-        users_list = []
-        async for user in users_cursor:
-            # Make fields consistent with your requested format
-            users_list.append({
-                "name": user.get("name", "None"),
-                "username": user.get("username", "None"),
-                "id": user.get("id")
-            })
-
-        # 3) Write to JSON file with fixed name
-        tmp_path = "SaveRestricted.json"
-        with open(tmp_path, "w", encoding="utf-8") as f:
-            json.dump(users_list, f, indent=2, ensure_ascii=False)
-
-        # 4) Send the JSON file to the admin who requested it
-        caption = f"📄 **__Recorded {len(users_list)} Users__**"
-        await message.reply_document(
-            document=tmp_path,
-            caption=caption
-        )
-
-        # 5) Clean up the file after sending
-        try:
-            os.remove(tmp_path)
-        except Exception as e:
-            print(f"[!] Failed to Delete File {tmp_path}: {e}")
-
-    except Exception as e:
-        await msg.edit_text(f"**__⚠️ Error Fetching User Data:__**\n<code>{e}</code>")
-        print(f"[!] /users error: {e}")
 
 
 # Dont remove Credits
