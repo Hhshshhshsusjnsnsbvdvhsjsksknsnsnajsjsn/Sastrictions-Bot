@@ -6,15 +6,13 @@ from datetime import timezone, timedelta
 import aiohttp
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from config import API_ID, API_HASH, BOT_TOKEN, LOG_CHANNEL, KEEP_ALIVE_URL, DB_NAME, DB_URI
-from pymongo import MongoClient
+from config import API_ID, API_HASH, BOT_TOKEN, LOG_CHANNEL, KEEP_ALIVE_URL
 
 # ✅ Indian Standard Time
 IST = timezone(timedelta(hours=5, minutes=30))
 
-# Connect to MongoDB using your config
-mongo_client = MongoClient(DB_URI)
-db = mongo_client[DB_NAME]  # Database; collection auto-created as logged_users
+# Store logged users (in-memory)
+LOGGED_USERS = set()
 
 async def keep_alive():
     """Send a request every 300 seconds to keep the bot alive (if required)."""
@@ -84,33 +82,34 @@ class Bot(Client):
 
 BotInstance = Bot()
 
-# Handler for new users (persistent)
+# Handler for new users (only logs once per user)
 @BotInstance.on_message(filters.private & filters.incoming, group=-1)
 async def new_user_log(bot: Client, message: Message):
     user = message.from_user
     if user is None:
         return
 
-    # Check DB instead of in-memory set
-    if db.logged_users.find_one({"user_id": user.id}):
-        return  # Already logged
+    # Log only if user not already logged  
+    if user.id not in LOGGED_USERS:  
+        LOGGED_USERS.add(user.id)  
 
-    # Insert user into DB
-    db.logged_users.insert_one({"user_id": user.id, "username": user.username})
-
-    # Log to your channel
-    now = datetime.datetime.now(IST)
-    text = (
-        f"**#NewUser 👤**\n"
-        f"- __@{bot.me.username}__\n\n"
-        f"- **__User: {user.mention}__**\n"
-        f"- **__User ID:__** `{user.id}`\n"
-        f"- **__Date:__** __{now.strftime('%d-%b-%Y')}__\n"
-        f"- **__Time:__** __{now.strftime('%I:%M %p')}__"
-    )
-    try:
-        await bot.send_message(LOG_CHANNEL, text)
-    except Exception as e:
-        print(f"New user log failed: {e}")
+        now = datetime.datetime.now(IST)  
+        text = (  
+            f"**#NewUser 👤**\n"  
+            f"- __@{bot.me.username}__\n\n"  
+            f"- **__User: {user.mention}__**\n"  
+            f"- **__User ID:__** `{user.id}`\n"  
+            f"- **__Date:__** __{now.strftime('%d-%b-%Y')}__\n"  
+            f"- **__Time:__** __{now.strftime('%I:%M %p')}__"  
+        )  
+        try:  
+            await bot.send_message(LOG_CHANNEL, text)  
+        except Exception as e:  
+            print(f"New user log failed: {e}")
 
 BotInstance.run()
+
+
+# MyselfNeon
+# Don't Remove Credit 🥺
+# Telegram Channel @NeonFiles
