@@ -4,15 +4,18 @@ import logging
 import datetime
 from datetime import timezone, timedelta
 import aiohttp
+from motor.motor_asyncio import AsyncIOMotorClient  # ✅ MongoDB
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from config import API_ID, API_HASH, BOT_TOKEN, LOG_CHANNEL, KEEP_ALIVE_URL
+from config import API_ID, API_HASH, BOT_TOKEN, LOG_CHANNEL, KEEP_ALIVE_URL, DB_URI, DB_NAME
 
 # ✅ Indian Standard Time
 IST = timezone(timedelta(hours=5, minutes=30))
 
-# Store logged users (in-memory)
-LOGGED_USERS = set()
+# ✅ MongoDB setup
+mongo_client = AsyncIOMotorClient(DB_URI)
+db = mongo_client[DB_NAME]
+users_col = db["logged_users"]
 
 async def keep_alive():
     """Send a request every 300 seconds to keep the bot alive (if required)."""
@@ -36,7 +39,7 @@ class Bot(Client):
             workers=50,
             sleep_threshold=10
         )
-        self.keep_alive_task = None  # ✅ Track keep-alive task
+        self.keep_alive_task = None
 
     async def start(self):  
         await super().start()  
@@ -52,7 +55,7 @@ class Bot(Client):
             f"**- __@{me.username}__**\n\n"  
             f"**- __Date:__** __{now.strftime('%d-%b-%Y')}__\n"  
             f"**- __Time:__** __{now.strftime('%I:%M %p')}__\n"  
-            f"**- __@neonfiles __**"  
+            f"**- __@neonfiles__**"  
         )  
         try:  
             await self.send_message(LOG_CHANNEL, text)  
@@ -82,30 +85,40 @@ class Bot(Client):
 
 BotInstance = Bot()
 
-# Handler for new users (only logs once per user)
+# ✅ Handler for new users (persistent via MongoDB)
 @BotInstance.on_message(filters.private & filters.incoming, group=-1)
 async def new_user_log(bot: Client, message: Message):
     user = message.from_user
     if user is None:
         return
 
-    # Log only if user not already logged  
-    if user.id not in LOGGED_USERS:  
-        LOGGED_USERS.add(user.id)  
+    # Check if user already exists in DB
+    existing_user = await users_col.find_one({"user_id": user.id})
+    if existing_user:
+        return  # Already logged before
 
-        now = datetime.datetime.now(IST)  
-        text = (  
-            f"**#NewUser 👤**\n"  
-            f"- __@{bot.me.username}__\n\n"  
-            f"- **__User: {user.mention}__**\n"  
-            f"- **__User ID:__** `{user.id}`\n"  
-            f"- **__Date:__** __{now.strftime('%d-%b-%Y')}__\n"  
-            f"- **__Time:__** __{now.strftime('%I:%M %p')}__"  
-        )  
-        try:  
-            await bot.send_message(LOG_CHANNEL, text)  
-        except Exception as e:  
-            print(f"New user log failed: {e}")
+    # Insert new user into DB
+    await users_col.insert_one({
+        "user_id": user.id,
+        "username": user.username,
+        "first_name": user.first_name,
+        "logged_at": datetime.datetime.now(IST).isoformat()
+    })
+
+    # Log new user to channel
+    now = datetime.datetime.now(IST)  
+    text = (  
+        f"**#NewUser 👤**\n"  
+        f"- __@{bot.me.username}__\n\n"  
+        f"- **__User: {user.mention}__**\n"  
+        f"- **__User ID:__** `{user.id}`\n"  
+        f"- **__Date:__** __{now.strftime('%d-%b-%Y')}__\n"  
+        f"- **__Time:__** __{now.strftime('%I:%M %p')}__"  
+    )  
+    try:  
+        await bot.send_message(LOG_CHANNEL, text)  
+    except Exception as e:  
+        print(f"New user log failed: {e}")
 
 BotInstance.run()
 
