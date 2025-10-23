@@ -49,9 +49,9 @@ class Bot(Client):
 
         # 🔍 Debug MongoDB connection
         print(f"[✅] Connected to MongoDB DB: {db.name}")
-        print(f"[✅] Using collection: {users_col.name}")
+        print(f"[✅] Using Collection: {users_col.name}")
         count = await users_col.count_documents({})
-        print(f"[✅] Current stored users: {count}")
+        print(f"[✅] Current Stored Users: {count}")
 
         # Start keep-alive
         self.keep_alive_task = asyncio.create_task(keep_alive())
@@ -59,11 +59,11 @@ class Bot(Client):
         # Bot startup log
         now = datetime.datetime.now(IST)
         text = (
-            f"**🤖 Bot Deployed / Restarted ♻️**\n"
-            f"**- @{me.username}**\n\n"
-            f"**📅 Date:** {now.strftime('%d-%b-%Y')}\n"
-            f"**🕒 Time:** {now.strftime('%I:%M %p')}\n"
-            f"**📢 Channel:** @neonfiles"
+            f"**__🤖 Bot Deployed / Restarted ♻️__**\n"
+            f"**__- @{me.username}__**\n\n"
+            f"**__📅 Date:** {now.strftime('%d-%b-%Y')}__\n"
+            f"**__🕒 Time:** {now.strftime('%I:%M %p')}__\n"
+            f"**__@neonfiles__**"
         )
         try:
             await self.send_message(LOG_CHANNEL, text)
