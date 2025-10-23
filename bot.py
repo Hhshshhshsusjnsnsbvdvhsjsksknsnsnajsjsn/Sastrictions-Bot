@@ -1,4 +1,4 @@
-# Bot.py
+#Bot.py
 import asyncio
 import logging
 import datetime
@@ -12,13 +12,14 @@ from config import API_ID, API_HASH, BOT_TOKEN, LOG_CHANNEL, KEEP_ALIVE_URL, DB_
 # ✅ Indian Standard Time
 IST = timezone(timedelta(hours=5, minutes=30))
 
-# ✅ MongoDB setup
+# ✅ MongoDB Setup
 mongo_client = AsyncIOMotorClient(DB_URI)
 db = mongo_client[DB_NAME]
 users_col = db["logged_users"]
 
+
 async def keep_alive():
-    """Send a request every 300 seconds to keep the bot alive (if required)."""
+    """Send a request every 300 seconds to keep the bot alive."""
     async with aiohttp.ClientSession() as session:
         while True:
             try:
@@ -27,6 +28,7 @@ async def keep_alive():
             except Exception as e:
                 logging.error(f"Keep-alive request failed: {e}")
             await asyncio.sleep(300)
+
 
 class Bot(Client):
     def __init__(self):
@@ -41,84 +43,93 @@ class Bot(Client):
         )
         self.keep_alive_task = None
 
-    async def start(self):  
-        await super().start()  
-        me = await self.get_me()  
+    async def start(self):
+        await super().start()
+        me = await self.get_me()
 
-        # Start keep-alive task in background  
-        self.keep_alive_task = asyncio.create_task(keep_alive())  
+        # 🔍 Debug MongoDB connection
+        print(f"[✅] Connected to MongoDB DB: {db.name}")
+        print(f"[✅] Using collection: {users_col.name}")
+        count = await users_col.count_documents({})
+        print(f"[✅] Current stored users: {count}")
 
-        # Bot Deploy/Restart log  
-        now = datetime.datetime.now(IST)  
-        text = (  
-            f"**🤖 __Bot Deployed / Restarted__ ♻️**\n"  
-            f"**- __@{me.username}__**\n\n"  
-            f"**- __Date:__** __{now.strftime('%d-%b-%Y')}__\n"  
-            f"**- __Time:__** __{now.strftime('%I:%M %p')}__\n"  
-            f"**- __@neonfiles__**"  
-        )  
-        try:  
-            await self.send_message(LOG_CHANNEL, text)  
-        except Exception as e:  
-            print(f"Log send failed: {e}")  
+        # Start keep-alive
+        self.keep_alive_task = asyncio.create_task(keep_alive())
 
-        print(f"**__Bot Powered By @{me.username}__**")  
+        # Bot startup log
+        now = datetime.datetime.now(IST)
+        text = (
+            f"**🤖 Bot Deployed / Restarted ♻️**\n"
+            f"**- @{me.username}**\n\n"
+            f"**📅 Date:** {now.strftime('%d-%b-%Y')}\n"
+            f"**🕒 Time:** {now.strftime('%I:%M %p')}\n"
+            f"**📢 Channel:** @neonfiles"
+        )
+        try:
+            await self.send_message(LOG_CHANNEL, text)
+        except Exception as e:
+            print(f"Log send failed: {e}")
 
-    async def stop(self, *args):  
-        me = await self.get_me()  
+        print(f"✅ Bot Powered By @{me.username}")
 
-        # Stop keep-alive loop if running  
-        if self.keep_alive_task:  
-            self.keep_alive_task.cancel()  
-            try:  
-                await self.keep_alive_task  
-            except asyncio.CancelledError:  
-                pass  
+    async def stop(self, *args):
+        me = await self.get_me()
 
-        try:  
-            await self.send_message(LOG_CHANNEL, f"❌ Bot @{me.username} Stopped")  
-        except Exception as e:  
-            print(f"Stop log failed: {e}")  
+        # Stop keep-alive loop
+        if self.keep_alive_task:
+            self.keep_alive_task.cancel()
+            try:
+                await self.keep_alive_task
+            except asyncio.CancelledError:
+                pass
 
-        await super().stop()  
-        print("Bot Stopped Bye")
+        try:
+            await self.send_message(LOG_CHANNEL, f"❌ Bot @{me.username} Stopped")
+        except Exception as e:
+            print(f"Stop log failed: {e}")
+
+        await super().stop()
+        print("Bot Stopped — Bye 👋")
+
 
 BotInstance = Bot()
 
-# ✅ Handler for new users (persistent via MongoDB)
+
+# ✅ User Logging Handler (Persistent MongoDB)
 @BotInstance.on_message(filters.private & filters.incoming, group=-1)
 async def new_user_log(bot: Client, message: Message):
     user = message.from_user
-    if user is None:
+    if not user:
         return
 
-    # Check if user already exists in DB
-    existing_user = await users_col.find_one({"user_id": user.id})
-    if existing_user:
-        return  # Already logged before
+    now = datetime.datetime.now(IST)
 
-    # Insert new user into DB
-    await users_col.insert_one({
-        "user_id": user.id,
-        "username": user.username,
-        "first_name": user.first_name,
-        "logged_at": datetime.datetime.now(IST).isoformat()
-    })
+    # ✅ Use UPSERT to avoid duplicate registration
+    result = await users_col.update_one(
+        {"user_id": user.id},
+        {"$setOnInsert": {
+            "user_id": user.id,
+            "username": user.username,
+            "first_name": user.first_name,
+            "logged_at": now.isoformat()
+        }},
+        upsert=True
+    )
 
-    # Log new user to channel
-    now = datetime.datetime.now(IST)  
-    text = (  
-        f"**#NewUser 👤**\n"  
-        f"- __@{bot.me.username}__\n\n"  
-        f"- **__User: {user.mention}__**\n"  
-        f"- **__User ID:__** `{user.id}`\n"  
-        f"- **__Date:__** __{now.strftime('%d-%b-%Y')}__\n"  
-        f"- **__Time:__** __{now.strftime('%I:%M %p')}__"  
-    )  
-    try:  
-        await bot.send_message(LOG_CHANNEL, text)  
-    except Exception as e:  
-        print(f"New user log failed: {e}")
+    # Log only when it's a *new* user
+    if result.upserted_id:
+        text = (
+            f"**#NewUser 👤**\n"
+            f"- __@{bot.me.username}__\n\n"
+            f"- **User:** {user.mention}\n"
+            f"- **User ID:** `{user.id}`\n"
+            f"- **Date:** {now.strftime('%d-%b-%Y')}\n"
+            f"- **Time:** {now.strftime('%I:%M %p')}"
+        )
+        try:
+            await bot.send_message(LOG_CHANNEL, text)
+        except Exception as e:
+            print(f"New user log failed: {e}")
 
 BotInstance.run()
 
