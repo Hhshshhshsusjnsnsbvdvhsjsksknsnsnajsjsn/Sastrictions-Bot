@@ -12,3 +12,8 @@ COPY . .
 
 # Start application
 CMD gunicorn app:app & python3 bot.py
+
+
+# MyselfNeon
+# Don't Remove Credit 🥺
+# Telegram Channel @NeonFiles
