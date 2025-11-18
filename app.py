@@ -20,7 +20,7 @@ def hello_world():
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Neon Duo Text</title>
+  <title>@MyselfNeon</title>
   <style>
     body {
       background-color: black;
