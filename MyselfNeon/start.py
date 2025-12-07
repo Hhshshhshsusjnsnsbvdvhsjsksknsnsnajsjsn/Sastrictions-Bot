@@ -17,9 +17,10 @@ import pyrogram
 from pyrogram import Client, filters, enums
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated, UserAlreadyParticipant, InviteHashExpired, UsernameNotOccupied
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
-from config import API_ID, API_HASH, ERROR_MESSAGE
+from config import API_ID, API_HASH, ERROR_MESSAGE, VERIFY_TUTORIAL # <--- Added VERIFY_TUTORIAL
 from database.db import db
 from MyselfNeon.strings import HELP_TXT
+from MyselfNeon.verify import check_token, verify_user, check_verification, get_token # <--- Added get_token
 
 class batch_temp(object):
     IS_BATCH = {}
@@ -27,7 +28,6 @@ class batch_temp(object):
 # -------------------
 # Supported Telegram Reactions
 # -------------------
-
 REACTIONS = [
     "🤝", "😇", "🤗", "😍", "👍", "🎅", "😐", "🥰", "🤩",
     "😱", "🤣", "😘", "👏", "😛", "😈", "🎉", "⚡️", "🫡",
@@ -37,7 +37,6 @@ REACTIONS = [
 # -------------------
 # Download status
 # -------------------
-
 async def downstatus(client, statusfile, message, chat):
     while not os.path.exists(statusfile):
         await asyncio.sleep(3)
@@ -53,7 +52,6 @@ async def downstatus(client, statusfile, message, chat):
 # -------------------
 # Upload status
 # -------------------
-
 async def upstatus(client, statusfile, message, chat):
     while not os.path.exists(statusfile):
         await asyncio.sleep(3)
@@ -69,7 +67,6 @@ async def upstatus(client, statusfile, message, chat):
 # -------------------
 # Progress writer
 # -------------------
-
 def progress(current, total, message, type):
     with open(f'{message.id}{type}status.txt', "w") as fileup:
         fileup.write(f"{current * 100 / total:.1f}%")
@@ -77,11 +74,32 @@ def progress(current, total, message, type):
 # -------------------
 # Start command
 # -------------------
-
 @Client.on_message(filters.command(["start"]))
 async def send_start(client: Client, message: Message):
     if not await db.is_user_exist(message.from_user.id):
         await db.add_user(message.from_user.id, message.from_user.first_name)
+
+    # ------------------------------------------
+    # VERIFICATION CHECK FOR DEEP LINKS
+    # ------------------------------------------
+    if len(message.command) > 1:
+        data = message.command[1]
+        if data.split("-")[0] == "verify":
+            try:
+                _, user_id, token = data.split("-")
+                user_id = int(user_id)
+            except:
+                return await message.reply("❌ Invalid Verification Link.")
+
+            if message.from_user.id != user_id:
+                return await message.reply("❌ This link is not for you!")
+
+            if await check_token(user_id, token):
+                await verify_user(client, user_id, token)
+                return await message.reply("<b>✅ Verification Successful!</b>\n\nYou can now use the bot for 12 hours.")
+            else:
+                return await message.reply("<b>❌ Invalid or Expired Token!</b>\n\nUse /verify to get a new one.")
+    # ------------------------------------------
 
     buttons = [
         [InlineKeyboardButton("Hᴏᴡ Tᴏ Usᴇ Mᴇ 🤔", callback_data="help_btn")],
@@ -114,7 +132,6 @@ async def send_start(client: Client, message: Message):
 # -------------------
 # Help command (standalone)
 # -------------------
-
 @Client.on_message(filters.command(["help"]))
 async def send_help(client: Client, message: Message):
     await client.send_message(
@@ -125,7 +142,6 @@ async def send_help(client: Client, message: Message):
 # -------------------
 # Cancel command
 # -------------------
-
 @Client.on_message(filters.command(["cancel"]))
 async def send_cancel(client: Client, message: Message):
     batch_temp.IS_BATCH[message.from_user.id] = True
@@ -138,9 +154,19 @@ async def send_cancel(client: Client, message: Message):
 # -------------------
 # Handle incoming messages
 # -------------------
-
 @Client.on_message(filters.text & filters.private)
 async def save(client: Client, message: Message):
+    # ------------------------------------------
+    # VERIFICATION CHECK BEFORE PROCESSING
+    # ------------------------------------------
+    if not await check_verification(message.from_user.id):
+        btn = [[InlineKeyboardButton("Verify Now", callback_data="verify_query")]]
+        return await message.reply_text(
+            "❌ <b>You are not verified!</b>\n\nPlease verify your account to download files.",
+            reply_markup=InlineKeyboardMarkup(btn)
+        )
+    # ------------------------------------------
+
     if "https://t.me/" in message.text:
         if batch_temp.IS_BATCH.get(message.from_user.id) == False:
             return await message.reply_text(
@@ -214,7 +240,6 @@ async def save(client: Client, message: Message):
 # -------------------
 # Handle private content
 # -------------------
-
 async def handle_private(client: Client, acc, message: Message, chatid: int, msgid: int):
     msg: Message = await acc.get_messages(chatid, msgid)
     if msg.empty:
@@ -318,7 +343,6 @@ async def handle_private(client: Client, acc, message: Message, chatid: int, msg
 #-------------------
 # Get message type
 # -------------------
-
 def get_message_type(msg: pyrogram.types.messages_and_media.message.Message):
     try:
         msg.document.file_id
@@ -364,14 +388,43 @@ def get_message_type(msg: pyrogram.types.messages_and_media.message.Message):
 # -------------------
 # Inline button callback
 # -------------------
-
 @Client.on_callback_query()
 async def button_callbacks(client: Client, callback_query):
     data = callback_query.data
     message = callback_query.message
 
+    # ---------------------------------------
+    # NEW VERIFY BUTTON HANDLER
+    # ---------------------------------------
+    if data == "verify_query":
+        # Acknowledge the callback immediately to stop the spinning
+        await callback_query.answer("Generating link...", show_alert=False)
+        
+        bot_info = await client.get_me()
+        start_link = f"https://t.me/{bot_info.username}?start="
+        
+        try:
+            # Generate the token and short link
+            verify_url = await get_token(client, callback_query.from_user.id, start_link)
+            
+            buttons = [
+                [InlineKeyboardButton("🔗 Click Here To Verify", url=verify_url)],
+                [InlineKeyboardButton("❓ How To Verify", url=VERIFY_TUTORIAL)]
+            ]
+            
+            await client.edit_message_text(
+                chat_id=message.chat.id,
+                message_id=message.id,
+                text="<b><i>🔐 Verification Required !</i></b>\n\n"
+                     "<i>To continue using this Bot, you must Verify your Account.</i>\n"
+                     "<i>The Token is valid for 12 Hours.</i>",
+                reply_markup=InlineKeyboardMarkup(buttons)
+            )
+        except Exception as e:
+            await client.send_message(message.chat.id, f"Error generating link: {e}")
+
     # Help button  
-    if data == "help_btn":
+    elif data == "help_btn":
         help_buttons = InlineKeyboardMarkup([
             [
                 InlineKeyboardButton("Cʟᴏsᴇ ❌", callback_data="close_btn"),
