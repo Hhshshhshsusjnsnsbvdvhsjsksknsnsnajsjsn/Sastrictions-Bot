@@ -7,6 +7,7 @@ aiohttp==3.9.5
 
 # --- Database & Utilities ---
 motor
+shortzy
 
 # --- Web Framework (Flask Stack) ---
 Flask==1.1.2
