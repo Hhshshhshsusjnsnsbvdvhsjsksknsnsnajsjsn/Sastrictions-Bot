@@ -38,7 +38,7 @@ KEEP_ALIVE_URL = os.environ.get("KEEP_ALIVE_URL", "")
 # VERIFICATION CONFIG
 # -------------------
 VERIFY = bool(os.environ.get('VERIFY', True)) # Set True to enable
-VERIFY_SHORTLINK_URL = os.environ.get('VERIFY_SHORTLINK_URL', 'gplinks.com') # Your Shortener Domain
+VERIFY_SHORTLINK_URL = os.environ.get('VERIFY_SHORTLINK_URL', 'ShrinkMe.io') # Your Shortener Domain
 VERIFY_SHORTLINK_API = os.environ.get('VERIFY_SHORTLINK_API', '') # Your Shortener API Key
 VERIFY_TUTORIAL = os.environ.get('VERIFY_TUTORIAL', 'https://t.me/your_tutorial_link') # Tutorial Link
 
