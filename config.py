@@ -23,16 +23,24 @@ ADMINS = int(os.environ.get("ADMINS", "841851780"))
 
 # Your Mongodb Database Url
 DB_URI = os.environ.get("DB_URI", "")
-DB_NAME = os.environ.get("DB_NAME", "SaveRestricted")
+DB_NAME = os.environ.get("DB_NAME", "Testing")
 
 # Log Channel to Track New Users 
-LOG_CHANNEL = -1001889915480  # replace with your log channel id
+LOG_CHANNEL = int(os.environ.get("LOG_CHANNEL", "-1001889915480"))
 
 # If You Want Error Message In Your Personal Message Then Turn It True Else If You Don't Want Then False
 ERROR_MESSAGE = bool(os.environ.get('ERROR_MESSAGE', True))
 
 # Keep-Alive URL
 KEEP_ALIVE_URL = os.environ.get("KEEP_ALIVE_URL", "")
+
+# -------------------
+# VERIFICATION CONFIG
+# -------------------
+VERIFY = bool(os.environ.get('VERIFY', True)) # Set True to enable
+VERIFY_SHORTLINK_URL = os.environ.get('VERIFY_SHORTLINK_URL', 'ShrinkMe.io') # Your Shortener Domain
+VERIFY_SHORTLINK_API = os.environ.get('VERIFY_SHORTLINK_API', '') # Your Shortener API Key
+VERIFY_TUTORIAL = os.environ.get('VERIFY_TUTORIAL', 'https://t.me/your_tutorial_link') # Tutorial Link
 
 
 # MyselfNeon
