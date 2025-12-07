@@ -1,5 +1,5 @@
 # ---------------------------------------------------
-# File Name: Bot.py
+# File Name: Config.py
 # Author: NeonAnurag
 # GitHub: https://github.com/MyselfNeon/
 # Telegram: https://t.me/MyelfNeon
