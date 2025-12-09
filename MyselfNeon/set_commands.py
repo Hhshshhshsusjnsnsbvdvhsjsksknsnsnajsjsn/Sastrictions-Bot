@@ -1,7 +1,7 @@
 # ------------------------------------------------
 # File Name: Set_Commands.py
 # Author: https://t.me/myselfneon
-# Description: Auto Add Commands via /ncommands
+# Description: Auto Add Commands via /ncommands with Countdown
 # ------------------------------------------------
 
 import asyncio
@@ -22,28 +22,33 @@ SET_COMMANDS = [
 # --- Internal Command Handler ---
 @Client.on_message(filters.command("ncommands"))
 async def sync_bot_commands(client: Client, message: Message):
-    # 01. Notify User and Start Delay
-    msg = await message.reply_text("🔄 __Initializing Command Refresh ... \n⏰ Waiting **3** Seconds ...__")
+    msg = await message.reply_text("**⏱️ __Wait 3 Seconds while I load your Commands through plugin System.__**")
     
-    # 02. Wait 3 Seconds as requested
-    await asyncio.sleep(3)
+    # 01. Real-time Countdown Loop
+    for i in range(2, 0, -1):
+        await asyncio.sleep(1)
+        try:
+            await msg.edit_text(f"**⏱️ __Wait {i} Seconds while I load your Commands through plugin System.__**")
+        except:
+            pass
+            
+    await asyncio.sleep(1)
 
     print("Checking Command Sync...")
 
     try:
-        # 03. --- Format the Commands ---
+        # 02. --- Format the Commands ---
         commands = [BotCommand(cmd, desc) for cmd, desc in SET_COMMANDS]
 
-        # 04. --- Push to Telegram ---
+        # 03. --- Push to Telegram ---
         await client.set_bot_commands(commands)
         
         print(f"✅ Commands Synced with Telegram: {SET_COMMANDS}")
         
         # 05. --- Confirm Success ---
-        await msg.edit_text("**✅ __Success !!\n🎉 Commands Updated Successfully.**\n👀 Close Telegram and Return back to see Changes. - by **@MyselfNeon** 🆘__")
+        await msg.edit_text("**✅ __Success !!\n🎉 Commands Updated Successfully.__**\n👀 **__Close Telegram and Return back to see Changes. - by @MyselfNeon 🆘__**")
         
     except Exception as e:
-        print(f"✗ Failed to Sync Commands: {e}")
-        await msg.edit_text(f"**🚫 __Error Updating Commands:***\n{e}__")
+        print(f"❌ Failed to Sync Commands: {e}")
+        await msg.edit_text(f"**🚫 __Error Updating Commands:__**\n`{e}`")
 
-  
