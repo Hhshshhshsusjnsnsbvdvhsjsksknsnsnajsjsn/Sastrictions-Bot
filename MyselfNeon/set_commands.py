@@ -20,7 +20,7 @@ SET_COMMANDS = [
 ]
 
 # --- Internal Command Handler ---
-@Client.on_message(filters.command("ncommands"))
+@Client.on_message(filters.command("neoncmd"))
 async def sync_bot_commands(client: Client, message: Message):
     msg = await message.reply_text("**⏱️ __Wait 3 Seconds while I load your Commands through plugin System.__**")
     
