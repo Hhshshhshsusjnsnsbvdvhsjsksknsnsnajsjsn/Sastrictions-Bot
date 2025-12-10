@@ -1,10 +1,11 @@
 # ------------------------------------------------
-# File Name: Set_Commands.py
+# File Name: NeonCommands.py
 # Author: https://t.me/myselfneon
-# Description: Auto Add Commands via /ncommands with Countdown
+# Description: Auto Add Commands via /ncommands (Owner Only)
 # ------------------------------------------------
 
 import asyncio
+from config import ADMINS
 from pyrogram import Client, filters
 from pyrogram.types import BotCommand, Message
 
@@ -20,11 +21,11 @@ SET_COMMANDS = [
 ]
 
 # --- Internal Command Handler ---
-@Client.on_message(filters.command("neoncmd"))
+@Client.on_message(filters.command("neoncmd") & filters.user(ADMINS))
 async def sync_bot_commands(client: Client, message: Message):
+
     msg = await message.reply_text("**⏱️ __Wait 3 Seconds while I load your Commands through plugin System.__**")
     
-    # 01. Real-time Countdown Loop
     for i in range(2, 0, -1):
         await asyncio.sleep(1)
         try:
@@ -37,18 +38,17 @@ async def sync_bot_commands(client: Client, message: Message):
     print("Checking Command Sync...")
 
     try:
-        # 02. --- Format the Commands ---
+  
         commands = [BotCommand(cmd, desc) for cmd, desc in SET_COMMANDS]
 
-        # 03. --- Push to Telegram ---
         await client.set_bot_commands(commands)
         
         print(f"✅ Commands Synced with Telegram: {SET_COMMANDS}")
         
-        # 05. --- Confirm Success ---
+        # --- Confirm Success ---
         await msg.edit_text("**✅ __Success !!\n🎉 Commands Updated Successfully.__**\n👀 **__Close Telegram and Return back to see Changes. - by @MyselfNeon 🆘__**")
         
     except Exception as e:
-        print(f"❌ Failed to Sync Commands: {e}")
+        print(f"✗ Failed to Sync Commands: {e}")
         await msg.edit_text(f"**🚫 __Error Updating Commands:__**\n`{e}`")
 
