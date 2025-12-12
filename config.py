@@ -37,10 +37,10 @@ KEEP_ALIVE_URL = os.environ.get("KEEP_ALIVE_URL", "https://sastrictions-bot.onre
 # -------------------
 # VERIFICATION CONFIG
 # -------------------
-VERIFY = bool(os.environ.get('VERIFY', False)) # Set True to enable
-VERIFY_SHORTLINK_URL = os.environ.get('VERIFY_SHORTLINK_URL', 'ShrinkMe.io') # Your Shortener Domain
-VERIFY_SHORTLINK_API = os.environ.get('VERIFY_SHORTLINK_API', '') # Your Shortener API Key
-VERIFY_TUTORIAL = os.environ.get('VERIFY_TUTORIAL', 'https://t.me/your_tutorial_link') # Tutorial Link
+VERIFY = bool(os.environ.get('VERIFY', True)) # Set True to enable
+VERIFY_SHORTLINK_URL = os.environ.get('VERIFY_SHORTLINK_URL', 'linkshortify.com') # Your Shortener Domain
+VERIFY_SHORTLINK_API = os.environ.get('VERIFY_SHORTLINK_API', '988bdae35d47313de5038650f31c1d1e2a541e98') # Your Shortener API Key
+VERIFY_TUTORIAL = os.environ.get('VERIFY_TUTORIAL', 'https://t.me/open_movie_links/6') # Tutorial Link
 
 
 # MyselfNeon
