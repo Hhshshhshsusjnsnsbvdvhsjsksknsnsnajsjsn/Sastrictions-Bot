@@ -1,13 +1,6 @@
 # ---------------------------------------------------
 # File Name: DB.py
 # Author: NeonAnurag
-# GitHub: https://github.com/MyselfNeon/
-# Telegram: https://t.me/MyelfNeon
-# YouTube: https://youtube.com/@MyselfNeon
-# Created: 2025-10-21
-# Last Modified: 2025-10-22
-# Version: Latest
-# License: MIT License
 # ---------------------------------------------------
 
 import motor.motor_asyncio
@@ -25,7 +18,7 @@ class Database:
         return dict(
             id = id,
             name = name,
-            username = username,  # <--- Now saving username
+            username = username,
             session = None,
             verify_token = None,
             verify_date = None
@@ -57,6 +50,9 @@ class Database:
         user = await self.col.find_one({'id': int(id)})
         return user.get('session')
 
+    # ---------------------------------------
+    # NEW VERIFICATION METHODS
+    # ---------------------------------------
 
     async def update_verify_token(self, id, token):
         await self.col.update_one({'id': int(id)}, {'$set': {'verify_token': token}})
@@ -72,11 +68,12 @@ class Database:
         user = await self.col.find_one({'id': int(id)})
         return user.get('verify_date')
 
-db = Database(DB_URI, DB_NAME)
-
-# ---------------------------------------
-    # ADD THIS TO database/db.py
     # ---------------------------------------
+    # NEW USERNAME UPDATE METHOD (FIXED)
+    # ---------------------------------------
+
     async def update_username(self, id, username):
         """Updates the username for an existing user"""
         await self.col.update_one({'id': int(id)}, {'$set': {'username': username}})
+
+db = Database(DB_URI, DB_NAME)
