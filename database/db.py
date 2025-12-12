@@ -73,3 +73,10 @@ class Database:
         return user.get('verify_date')
 
 db = Database(DB_URI, DB_NAME)
+
+# ---------------------------------------
+    # ADD THIS TO database/db.py
+    # ---------------------------------------
+    async def update_username(self, id, username):
+        """Updates the username for an existing user"""
+        await self.col.update_one({'id': int(id)}, {'$set': {'username': username}})
