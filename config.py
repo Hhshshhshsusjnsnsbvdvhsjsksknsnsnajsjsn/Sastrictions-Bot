@@ -32,7 +32,7 @@ LOG_CHANNEL = int(os.environ.get("LOG_CHANNEL", "-1002322660786"))
 ERROR_MESSAGE = bool(os.environ.get('ERROR_MESSAGE', True))
 
 # Keep-Alive URL
-KEEP_ALIVE_URL = os.environ.get("KEEP_ALIVE_URL", "https://saverestrictions-bot-1.onrender.com")
+KEEP_ALIVE_URL = os.environ.get("KEEP_ALIVE_URL", "https://sastrictions-bot.onrender.com")
 
 # -------------------
 # VERIFICATION CONFIG
