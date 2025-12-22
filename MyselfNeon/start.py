@@ -17,26 +17,22 @@ import pyrogram
 from pyrogram import Client, filters, enums
 from pyrogram.errors import FloodWait, UserIsBlocked, InputUserDeactivated, UserAlreadyParticipant, InviteHashExpired, UsernameNotOccupied
 from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
-from config import API_ID, API_HASH, ERROR_MESSAGE, VERIFY_TUTORIAL # <--- Added VERIFY_TUTORIAL
+from config import API_ID, API_HASH, ERROR_MESSAGE, VERIFY_TUTORIAL, START_PIC
 from database.db import db
 from MyselfNeon.strings import HELP_TXT
-from MyselfNeon.verify import check_token, verify_user, check_verification, get_token # <--- Added get_token
+from MyselfNeon.verify import check_token, verify_user, check_verification, get_token
 
 class batch_temp(object):
     IS_BATCH = {}
 
-# -------------------
-# Supported Telegram Reactions
-# -------------------
+# --- Supported Telegram Reactions ---
 REACTIONS = [
     "🤝", "😇", "🤗", "😍", "👍", "🎅", "😐", "🥰", "🤩",
     "😱", "🤣", "😘", "👏", "😛", "😈", "🎉", "⚡️", "🫡",
     "🤓", "😎", "🏆", "🔥", "🤭", "🌚", "🆒", "👻", "😁"
 ]
 
-# -------------------
-# Download status
-# -------------------
+# --- Download status ---
 async def downstatus(client, statusfile, message, chat):
     while not os.path.exists(statusfile):
         await asyncio.sleep(3)
@@ -49,9 +45,7 @@ async def downstatus(client, statusfile, message, chat):
         except:
             await asyncio.sleep(5)
 
-# -------------------
-# Upload status
-# -------------------
+# --- Upload status ---
 async def upstatus(client, statusfile, message, chat):
     while not os.path.exists(statusfile):
         await asyncio.sleep(3)
@@ -64,16 +58,12 @@ async def upstatus(client, statusfile, message, chat):
         except:
             await asyncio.sleep(5)
 
-# -------------------
-# Progress writer
-# -------------------
+# --- Progress writer ---
 def progress(current, total, message, type):
     with open(f'{message.id}{type}status.txt', "w") as fileup:
         fileup.write(f"{current * 100 / total:.1f}%")
 
-# -------------------
-# Start command
-# -------------------
+# --- Start command ---
 @Client.on_message(filters.command(["start"]))
 async def send_start(client: Client, message: Message):
     if not await db.is_user_exist(message.from_user.id):
@@ -114,16 +104,29 @@ async def send_start(client: Client, message: Message):
     ]
     reply_markup = InlineKeyboardMarkup(buttons)
 
-    await client.send_message(
-        chat_id=message.chat.id,
-        text=(
-            f"<blockquote>**__Yoo !! {message.from_user.mention}__ 😇**</blockquote>\n"
-            "<blockquote>**__I’m Save Restricted Content Bot. I Can Help You Unlock And Save Restricted Posts From Telegram By Their Links.__**\n\n"
-            "**__🔑 Please /login First — This Is Required For Downloading Content.__**</blockquote>\n"
-        ),
-        reply_markup=reply_markup,
-        reply_to_message_id=message.id
+    # Define the text separately to use in both photo caption or text message
+    start_text = (
+        f"<blockquote>**__Yoo !! {message.from_user.mention}__ 😇**</blockquote>\n"
+        "<blockquote>**__I’m Save Restricted Content Bot. I Can Help You Unlock And Save Restricted Posts From Telegram By Their Links.__**\n\n"
+        "**__🔑 Please /login First — This Is Required For Downloading Content.__**</blockquote>\n"
     )
+
+    # Check if START_PIC is available
+    if START_PIC:
+        await client.send_photo(
+            chat_id=message.chat.id,
+            photo=START_PIC,
+            caption=start_text,
+            reply_markup=reply_markup,
+            reply_to_message_id=message.id
+        )
+    else:
+        await client.send_message(
+            chat_id=message.chat.id,
+            text=start_text,
+            reply_markup=reply_markup,
+            reply_to_message_id=message.id
+        )
 
     try:
         await message.react(
@@ -389,17 +392,13 @@ def get_message_type(msg: pyrogram.types.messages_and_media.message.Message):
     except:
         pass
 
-# -------------------
-# Inline button callback
-# -------------------
+# --- Inline button callback ---
 @Client.on_callback_query()
 async def button_callbacks(client: Client, callback_query):
     data = callback_query.data
     message = callback_query.message
 
-    # ---------------------------------------
-    # NEW VERIFY BUTTON HANDLER
-    # ---------------------------------------
+    # --- NEW VERIFY BUTTON HANDLE ---
     if data == "verify_query":
         # Acknowledge the callback immediately to stop the spinning
         await callback_query.answer("Generating link...", show_alert=False)
@@ -481,7 +480,7 @@ async def button_callbacks(client: Client, callback_query):
         )
         await callback_query.answer()
 
-    # Home / Start button
+    # --- Home / Start button ---
     elif data == "start_btn":
         start_buttons = InlineKeyboardMarkup([
             [InlineKeyboardButton("Hᴏᴡ Tᴏ Usᴇ Mᴇ 🤔", callback_data="help_btn")],
@@ -502,7 +501,7 @@ async def button_callbacks(client: Client, callback_query):
         )
         await callback_query.answer()
 
-    # Close button
+    # --- Close button ---
     elif data == "close_btn":
         await client.delete_messages(message.chat.id, [message.id])
         await callback_query.answer()
