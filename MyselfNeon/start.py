@@ -73,9 +73,7 @@ async def send_start(client: Client, message: Message):
             message.from_user.username
         )
 
-    # ------------------------------------------
-    # VERIFICATION CHECK FOR DEEP LINKS
-    # ------------------------------------------
+    # --- Verification Check For Deep Links ---
     if len(message.command) > 1:
         data = message.command[1]
         if data.split("-")[0] == "verify":
@@ -93,7 +91,6 @@ async def send_start(client: Client, message: Message):
                 return await message.reply("<b>✅ Verification Successful!</b>\n\nYou can now use the bot for 12 hours.")
             else:
                 return await message.reply("<b>❌ Invalid or Expired Token!</b>\n\nUse /verify to get a new one.")
-    # ------------------------------------------
 
     buttons = [
         [InlineKeyboardButton("Hᴏᴡ Tᴏ Usᴇ Mᴇ 🤔", callback_data="help_btn")],
@@ -104,14 +101,14 @@ async def send_start(client: Client, message: Message):
     ]
     reply_markup = InlineKeyboardMarkup(buttons)
 
-    # Define the text separately to use in both photo caption or text message
+    # --- Define the text separately to use in both photo caption or text message ---
     start_text = (
         f"<blockquote>**__Yoo !! {message.from_user.mention}__ 😇**</blockquote>\n"
         "<blockquote>**__I’m Save Restricted Content Bot. I Can Help You Unlock And Save Restricted Posts From Telegram By Their Links.__**\n\n"
         "**__🔑 Please /login First — This Is Required For Downloading Content.__**</blockquote>\n"
     )
 
-    # Check if START_PIC is available
+    # --- Check if START_PIC is available ---
     if START_PIC:
         await client.send_photo(
             chat_id=message.chat.id,
@@ -136,9 +133,7 @@ async def send_start(client: Client, message: Message):
     except Exception as e:
         print(f"Reaction failed: {e}")
 
-# -------------------
-# Help command (standalone)
-# -------------------
+# --- Help command (standalone) ---
 @Client.on_message(filters.command(["help"]))
 async def send_help(client: Client, message: Message):
     await client.send_message(
@@ -146,9 +141,7 @@ async def send_help(client: Client, message: Message):
         text=f"{HELP_TXT}"
     )
 
-# -------------------
-# Cancel command
-# -------------------
+# --- Cancel command ---
 @Client.on_message(filters.command(["cancel"]))
 async def send_cancel(client: Client, message: Message):
     batch_temp.IS_BATCH[message.from_user.id] = True
@@ -158,21 +151,16 @@ async def send_cancel(client: Client, message: Message):
         quote=True
     )
 
-# -------------------
-# Handle incoming messages
-# -------------------
+# --- Handle incoming messages ---
 @Client.on_message(filters.text & filters.private)
 async def save(client: Client, message: Message):
-    # ------------------------------------------
-    # VERIFICATION CHECK BEFORE PROCESSING
-    # ------------------------------------------
+    # --- Verification Check Before Processing ---
     if not await check_verification(message.from_user.id):
         btn = [[InlineKeyboardButton("Verify Now", callback_data="verify_query")]]
         return await message.reply_text(
             "❌ <b>You are not verified!</b>\n\nPlease verify your account to download files.",
             reply_markup=InlineKeyboardMarkup(btn)
         )
-    # ------------------------------------------
 
     if "https://t.me/" in message.text:
         if batch_temp.IS_BATCH.get(message.from_user.id) == False:
@@ -244,9 +232,7 @@ async def save(client: Client, message: Message):
 
         batch_temp.IS_BATCH[message.from_user.id] = True
 
-# -------------------
-# Handle private content
-# -------------------
+# --- Handle private content ---
 async def handle_private(client: Client, acc, message: Message, chatid: int, msgid: int):
     msg: Message = await acc.get_messages(chatid, msgid)
     if msg.empty:
@@ -347,9 +333,7 @@ async def handle_private(client: Client, acc, message: Message, chatid: int, msg
 
     await client.delete_messages(message.chat.id, [smsg.id])
 
-#-------------------
-# Get message type
-# -------------------
+# --- Get message type ---
 def get_message_type(msg: pyrogram.types.messages_and_media.message.Message):
     try:
         msg.document.file_id
