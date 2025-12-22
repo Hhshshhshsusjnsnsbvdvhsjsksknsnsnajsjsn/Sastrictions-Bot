@@ -479,7 +479,7 @@ async def button_callbacks(client: Client, callback_query):
             text=(
                 f"<blockquote>**__Yoo !! {callback_query.from_user.mention}__ 👋**</blockquote>\n"
                 "<blockquote>**__I’m Save Restricted Content Bot. I Can Help You Unlock And Save Restricted Posts From Telegram By Their Links.__**\n\n"
-                "**__🔑 Please /login First — This Is Required For Downloading Content.__**</blockquote>\n"
+                "**__🔑 Please /login First — This Is Required For Downloading Content.__**</blockquote>"
             ),
             reply_markup=start_buttons
         )
