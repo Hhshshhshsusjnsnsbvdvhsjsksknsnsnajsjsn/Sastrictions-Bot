@@ -35,7 +35,7 @@ ERROR_MESSAGE = bool(os.environ.get('ERROR_MESSAGE', True))
 KEEP_ALIVE_URL = os.environ.get("KEEP_ALIVE_URL", "")
 
 # Start pic on /start 
-START_PIC = int(os.environ.get("START_PIC", "https://files.catbox.moe/krxuel.jpg"))
+START_PIC = os.environ.get("START_PIC", "https://files.catbox.moe/krxuel.jpg")
 
 # -------------------
 # VERIFICATION CONFIG
