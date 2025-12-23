@@ -75,7 +75,7 @@ class Bot(Client):
             f"**┟ Bot:** __@{me.username}__\n"
             f"**┟ Date:** __{date}__\n"
             f"**┠ Time:** __{time}__\n"
-            f"**┠ TimeZone:** ___Asia/Kolkata__\n"
+            f"**┠ TimeZone:** __Asia/Kolkata__\n"
             f"**┖ Version:** __v3.0.8-x__"
         )
         try:
