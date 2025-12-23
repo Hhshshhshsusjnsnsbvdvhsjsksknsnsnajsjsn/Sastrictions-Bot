@@ -68,12 +68,15 @@ class Bot(Client):
 
         # Bot startup log
         now = datetime.datetime.now(IST)
+        date = now.strftime("%d/%m/%y")
+        time = now.strftime("%I:%M:%S %p")
         text = (
-            f"**__🤖 Bot Deployed / Restarted ♻️__**\n"
-            f"**__- @{me.username}__**\n\n"
-            f"**__📅 Date:** {now.strftime('%d-%b-%Y')}__\n"
-            f"**__🕒 Time:** {now.strftime('%I:%M %p')}__\n"
-            f"**__@neonfiles__**"
+            f"**⌬ Restarted Successfully !**\n"
+            f"**┟ Bot:** __@{me.username}__\n"
+            f"**┟ Date:** __{date}__\n"
+            f"**┠ Time:** __{time}__\n"
+            f"**┠ TimeZone:** ___Asia/Kolkata__\n"
+            f"**┖ Version:** __v3.0.8-x__"
         )
         try:
             await self.send_message(LOG_CHANNEL, text)
