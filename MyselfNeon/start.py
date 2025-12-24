@@ -88,9 +88,9 @@ async def send_start(client: Client, message: Message):
 
             if await check_token(user_id, token):
                 await verify_user(client, user_id, token)
-                return await message.reply("<b>✅ Verification Successful!</b>\n\nYou can now use the bot for 12 hours.")
+                return await message.reply("<b><i>✅ Verification Successful!</i></b>\n\n<b><i>You can now Use the Bot for 4 Hours.</i></b>")
             else:
-                return await message.reply("<b>❌ Invalid or Expired Token!</b>\n\nUse /verify to get a new one.")
+                return await message.reply("<b><i>❌ Invalid or Expired Token!</i></b>\n\n<b><i>Use /verify to get a new one.</b></i>")
 
     buttons = [
         [InlineKeyboardButton("Hᴏᴡ Tᴏ Usᴇ Mᴇ 🤔", callback_data="help_btn")],
@@ -158,7 +158,7 @@ async def save(client: Client, message: Message):
     if not await check_verification(message.from_user.id):
         btn = [[InlineKeyboardButton("Verify Now", callback_data="verify_query")]]
         return await message.reply_text(
-            "❌ <b>You are not verified!</b>\n\nPlease verify your account to download files.",
+            "❌ <b><i>You are not Verified!</i></b>\n\n<i><b>Please Verify your Account to Download Files.</b></i>",
             reply_markup=InlineKeyboardMarkup(btn)
         )
 
