@@ -74,7 +74,7 @@ async def verify_user(bot, user_id, token):
         await bot.send_message(
             LOG_CHANNEL, 
             f"**⌬ #VERIFIED ✅**\n"
-            f"**┟ Bot:** __@{bot_info.username}\n"
+            f"**┟ Bot:** __@{bot_info.username}__\n"
             f"**┟ User:** __{user.mention}__\n"
             f"**┟ User ID:** `{user.id}`\n"
             f"**┟ Date:** __{now.strftime('%d %B, %Y')}__\n"
