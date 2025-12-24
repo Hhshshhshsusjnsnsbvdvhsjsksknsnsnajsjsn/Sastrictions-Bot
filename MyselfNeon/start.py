@@ -403,8 +403,8 @@ async def button_callbacks(client: Client, callback_query):
                 chat_id=message.chat.id,
                 message_id=message.id,
                 text="<b><i>🔐 Verification Required !</i></b>\n\n"
-                     "<i>To continue using this Bot, you must Verify your Account.</i>\n"
-                     "<i>The Token is valid for 12 Hours.</i>",
+                     "<i><b>To continue using this Bot, you must Verify your Account.</i></b>\n"
+                     "<i><b>The Token is valid for 4 Hours.</i></b>",
                 reply_markup=InlineKeyboardMarkup(buttons)
             )
         except Exception as e:
