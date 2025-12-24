@@ -38,7 +38,7 @@ async def verify_command_handler(bot, message):
         await msg.edit(
             text="<b><i>🔐 Verification Required !</i></b>\n\n"
                  "<i>To continue using this Bot, you must Verify your Account.</i>\n"
-                 "<i>The Token is valid for 12 Hours.</i>",
+                 "<i>The Token is valid for 4 Hours.</i>",
             reply_markup=InlineKeyboardMarkup(buttons)
         )
     except Exception as e:
