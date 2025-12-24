@@ -20,7 +20,7 @@ async def verify_command_handler(bot, message):
         return await message.reply("**__♻️ Verification is Currently Disabled.__**")
 
     if await check_verification(message.from_user.id):
-        return await message.reply("✅ **__You are Already Verified for 12 Hours! Enjoy.__**")
+        return await message.reply("✅ **__You are Already Verified for 4 Hours! Enjoy.__**")
 
     msg = await message.reply("**__Please wait, Generating your Verification Link...__**")
     
