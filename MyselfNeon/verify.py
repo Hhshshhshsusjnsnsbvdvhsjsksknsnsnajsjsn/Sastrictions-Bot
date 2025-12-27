@@ -69,9 +69,16 @@ async def verify_user(bot, user_id, token):
     
     try:
         user = await bot.get_users(user_id)
+        bot_info = await bot.get_me()
+        
         await bot.send_message(
             LOG_CHANNEL, 
-            f"#VERIFIED\nUser: {user.mention} (`{user.id}`)\nDuration: 12 Hours\nDate: {now.strftime('%d-%b-%Y %H:%M:%S')}"
+            f"**⌬ #VERIFIED ✅**\n"
+            f"**┟ Bot:** __@{bot_info.username}__\n"
+            f"**┟ User:** __{user.mention}__\n"
+            f"**┟ User ID:** `{user.id}`\n"
+            f"**┟ Date:** __{now.strftime('%d %B, %Y')}__\n"
+            f"**┖ Time:** __{now.strftime('%I:%M %p')}__"
         )
     except Exception as e:
         print(f"Log Error: {e}")
@@ -84,8 +91,8 @@ async def check_verification(user_id):
     verified_time = await db.get_verify_date(user_id)
     
     if verified_time:
-        # Check if current time is less than Verification Time + 12 Hours
-        if datetime.now() < verified_time + timedelta(hours=12):
+        # Check if current time is less than Verification Time + 4 Hours
+        if datetime.now() < verified_time + timedelta(hours=4):
             return True
             
     return False

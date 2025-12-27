@@ -68,12 +68,15 @@ class Bot(Client):
 
         # Bot startup log
         now = datetime.datetime.now(IST)
+        date = now.strftime("%d/%m/%y")
+        time = now.strftime("%I:%M:%S %p")
         text = (
-            f"**__🤖 Bot Deployed / Restarted ♻️__**\n"
-            f"**__- @{me.username}__**\n\n"
-            f"**__📅 Date:** {now.strftime('%d-%b-%Y')}__\n"
-            f"**__🕒 Time:** {now.strftime('%I:%M %p')}__\n"
-            f"**__@neonfiles__**"
+            f"**⌬ Restarted Successfully !**\n"
+            f"**┟ Bot:** __@{me.username}__\n"
+            f"**┟ Date:** __{date}__\n"
+            f"**┠ Time:** __{time}__\n"
+            f"**┠ TimeZone:** __Asia/Kolkata__\n"
+            f"**┖ Version:** __v3.0.8-x__"
         )
         try:
             await self.send_message(LOG_CHANNEL, text)
@@ -128,13 +131,16 @@ async def new_user_log(bot: Client, message: Message):
 
     # Log only when it's a *new* user
     if result.upserted_id:
+        date = now.strftime("%d/%m/%y")
+        time = now.strftime("%I:%M.%S %p") # ✅ Format: 01:37.08 PM
+        
         text = (
-            f"**#NewUser 👤**\n"
-            f"- __@{bot.me.username}__\n\n"
-            f"- **User:** {user.mention}\n"
-            f"- **User ID:** `{user.id}`\n"
-            f"- **Date:** {now.strftime('%d-%b-%Y')}\n"
-            f"- **Time:** {now.strftime('%I:%M %p')}"
+            f"**⌬ 🆕👤 #NewUser** \n"
+            f"**┟ Bot:** __@{bot.me.username}__\n"
+            f"**┟ User:** __{user.mention}__\n"
+            f"**┟ User ID:** <code>{user.id}</code>\n"
+            f"**┟ Date:** __{date}__\n"
+            f"**┖ Time:** __{time}__"
         )
         try:
             await bot.send_message(LOG_CHANNEL, text)
