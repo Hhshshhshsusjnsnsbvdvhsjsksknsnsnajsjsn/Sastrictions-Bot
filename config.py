@@ -32,7 +32,7 @@ LOG_CHANNEL = int(os.environ.get("LOG_CHANNEL", "-1002322660786"))
 ERROR_MESSAGE = bool(os.environ.get('ERROR_MESSAGE', True))
 
 # Keep-Alive URL
-KEEP_ALIVE_URL = os.environ.get("KEEP_ALIVE_URL", "https://sastrictions-bot.onrender.com")
+KEEP_ALIVE_URL = os.environ.get("KEEP_ALIVE_URL", "")
 
 # Start pic on /start 
 START_PIC = os.environ.get("START_PIC", "https://files.catbox.moe/krxuel.jpg")
@@ -42,7 +42,7 @@ START_PIC = os.environ.get("START_PIC", "https://files.catbox.moe/krxuel.jpg")
 # -------------------
 VERIFY = bool(os.environ.get('VERIFY', True)) # Set True to enable
 VERIFY_SHORTLINK_URL = os.environ.get('VERIFY_SHORTLINK_URL', 'linkshortify.com') # Your Shortener Domain
-VERIFY_SHORTLINK_API = os.environ.get('VERIFY_SHORTLINK_API', '988bdae35d47313de5038650f31c1d1e2a541e98') # Your Shortener API Key
+VERIFY_SHORTLINK_API = os.environ.get('VERIFY_SHORTLINK_API', '') # Your Shortener API Key
 VERIFY_TUTORIAL = os.environ.get('VERIFY_TUTORIAL', 'https://t.me/open_movie_links/6') # Tutorial Link
 
 
