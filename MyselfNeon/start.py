@@ -88,7 +88,7 @@ async def send_start(client: Client, message: Message):
 
             if await check_token(user_id, token):
                 await verify_user(client, user_id, token)
-                return await message.reply("<b><i>✅ Verification Successful!</i></b>\n\n<b><i>You can now Use the Bot for 4 Hours.</i></b>")
+                return await message.reply("<b><i>✅ Verification Successful!</i></b>\n\n<b><i>You can now Use the Bot for 12 Hours.</i></b>")
             else:
                 return await message.reply("<b><i>❌ Invalid or Expired Token!</i></b>\n\n<b><i>Use /verify to get a new one.</b></i>")
 
@@ -404,7 +404,7 @@ async def button_callbacks(client: Client, callback_query):
                 message_id=message.id,
                 text="<b><i>🔐 Verification Required !</i></b>\n\n"
                      "<i><b>To continue using this Bot, you must Verify your Account.</i></b>\n"
-                     "<i><b>The Token is valid for 4 Hours.</i></b>",
+                     "<i><b>The Token is valid for 12 Hours.</i></b>",
                 reply_markup=InlineKeyboardMarkup(buttons)
             )
         except Exception as e:
