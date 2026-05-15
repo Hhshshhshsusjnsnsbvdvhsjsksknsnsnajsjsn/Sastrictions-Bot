@@ -40,7 +40,7 @@ START_PIC = os.environ.get("START_PIC", "https://files.catbox.moe/krxuel.jpg")
 # -------------------
 # VERIFICATION CONFIG
 # -------------------
-VERIFY = bool(os.environ.get('VERIFY', True)) # Set True to enable
+VERIFY = bool(os.environ.get('VERIFY', False)) # Set True to enable
 VERIFY_SHORTLINK_URL = os.environ.get('VERIFY_SHORTLINK_URL', 'linkshortify.com') # Your Shortener Domain
 VERIFY_SHORTLINK_API = os.environ.get('VERIFY_SHORTLINK_API', '') # Your Shortener API Key
 VERIFY_TUTORIAL = os.environ.get('VERIFY_TUTORIAL', 'https://t.me/open_movie_links/6') # Tutorial Link
